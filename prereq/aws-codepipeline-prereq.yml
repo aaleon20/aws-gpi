@@ -1,5 +1,5 @@
 AWSTemplateFormatVersion: 2010-09-09
-Description: Codepipeline pre requisites
+Description: Codepipeline pre requisites GPI
 
 Resources:
   SNSapprovalprd:
@@ -212,8 +212,6 @@ Resources:
                   - lambda:CreateFunction
                   - lambda:DeleteFunction
                   - lambda:GetFunction
-                  - lambda:UpdateFunctionCode
-                  - lambda:UpdateFunctionConfiguration
                   - s3:*
                 Resource: "*"
 
@@ -373,4 +371,4 @@ Outputs:
   LambdaPolicyS3:
     Value: !Ref LambdaPolicyS3
     Export:
-        Name: LambdaPolicyS3        
+        Name: LambdaPolicyS3
