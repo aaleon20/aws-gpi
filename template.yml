@@ -26,7 +26,7 @@ Resources:
         Role: !GetAtt LambdaRole.Arn
         Environment:
             Variables:
-                DYNAMO_BD: !ImportValue DynamoUsuario
+                DYNAMO_BD: !Ref DynamoUsuario
     LambdaRole:
       Type: AWS::IAM::Role
       Properties:
