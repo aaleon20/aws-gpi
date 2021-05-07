@@ -71,7 +71,7 @@ Resources:
         Description: Lambda API Deployment
         RestApiId: !Ref RestApiAD
 
-        ApiGatewayIamRole:
+    ApiGatewayIamRole:
           Type: AWS::IAM::Role
           DependsOn: DynamoUsuario
           Properties:
