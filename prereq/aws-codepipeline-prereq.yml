@@ -163,6 +163,7 @@ Resources:
                   - lambda:CreateFunction
                   - lambda:InvokeFunction
                   - lambda:ListFunctions
+                  - lambda:UpdateFunctionConfiguration
                   - iam:PassRole 
                   - s3:*
                   - iam:PassRole
