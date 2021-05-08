@@ -95,12 +95,23 @@ Resources:
                       Action: 'lambda:*'
                       Resource: !GetAtt LambdaFunction.Arn
 
-    #Login
-
     LambdaFunction:
       Type: AWS::Serverless::Function
       Properties:
         FunctionName: GidNet
+        Handler: lambda_function.lambda_handler
+        Runtime: python3.7
+        MemorySize: 256
+        Timeout: 400
+        Role: !GetAtt LambdaRole.Arn
+        Environment:
+            Variables:
+                DYNAMO_BD: !Ref DynamoUsuario
+
+    LambdaFunctionLogin:
+      Type: AWS::Serverless::Function
+      Properties:
+        FunctionName: gidauth
         Handler: lambda_function.lambda_handler
         Runtime: python3.7
         MemorySize: 256
