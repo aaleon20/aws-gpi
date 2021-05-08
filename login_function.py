@@ -10,7 +10,8 @@ class DynamoAccessor:
         self.table = dynamo_db.Table(dynamo_table)
 
     def get_data_from_dynamo(self, dni, password):
-        response = self.table.query(KeyConditionExpression=Key('dni').eq(dni) & Key('password').eq(password))
+        response = self.table.scan(FilterExpression=
+            Attr('dni').eq(dni) & Attr('password').eq(password))
         return response["Items"][0] if any(response["Items"]) else None
 
 def lambda_handler(event, context):
