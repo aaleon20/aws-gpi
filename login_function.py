@@ -10,7 +10,7 @@ class DynamoAccessor:
         self.table = dynamo_db.Table(dynamo_table)
 
     def get_data_from_dynamo(self, dni):
-        response = self.table.query(KeyConditionExpression=Key('dni').eq(dni))
+        response = self.table.scan(KeyConditionExpression=Key('dni').eq(dni))
         return response["Items"][0] if any(response["Items"]) else None
 
 def lambda_handler(event, context):
