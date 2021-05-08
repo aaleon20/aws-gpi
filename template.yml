@@ -108,7 +108,7 @@ Resources:
             Variables:
                 DYNAMO_BD: !Ref DynamoUsuario
 
-      LambdaFunction:
+    LambdaFunction:
         Type: AWS::Serverless::Function
         Properties:
           FunctionName: allEmployees
