@@ -112,7 +112,7 @@ Resources:
       Type: AWS::Serverless::Function
       Properties:
         FunctionName: gidauth
-        Handler: lambda_function.lambda_handler
+        Handler: login_function.lambda_handler
         Runtime: python3.7
         MemorySize: 256
         Timeout: 400
