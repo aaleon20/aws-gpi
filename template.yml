@@ -15,6 +15,8 @@ Resources:
         SSESpecification:
           SSEEnabled: true
 
+    #Lambda Function Login      
+
     RestApiAD:
       Type: AWS::ApiGateway::RestApi
       Properties:
@@ -39,30 +41,6 @@ Resources:
               ResponseTemplates: {"application/json": ""}
         OperationName: !Sub ${AWS::AccountId}  
         
-    RestApiAllEmployees:
-      Type: AWS::ApiGateway::RestApi
-      Properties:
-        Name: api-gid-all-employees
-    Method:
-      Type: AWS::ApiGateway::Method
-      DependsOn: DynamoUsuario
-      Properties:
-        HttpMethod: POST
-        ResourceId: !GetAtt RestApiAllEmployees.RootResourceId
-        RestApiId: !Ref RestApiAllEmployees
-        AuthorizationType: NONE
-        MethodResponses:
-            - StatusCode: 200
-              ResponseModels: { "application/json": "Empty" }
-        Integration:
-          Type: AWS
-          IntegrationHttpMethod: "POST"
-          Uri: !Sub "arn:aws:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${LambdaFunctionAllEmployees.Arn}/invocations"
-          IntegrationResponses:
-            - StatusCode: 200
-              ResponseTemplates: {"application/json": ""}
-        OperationName: !Sub ${AWS::AccountId} 
-
     ApiGatewayResource:
       Type: AWS::ApiGateway::Resource
       DependsOn: DynamoUsuario
@@ -127,19 +105,6 @@ Resources:
         Runtime: python3.7
         MemorySize: 256
         Timeout: 300
-        Role: !GetAtt LambdaRole.Arn
-        Environment:
-            Variables:
-                DYNAMO_BD: !Ref DynamoUsuario
-
-    LambdaFunctionAllEmployees:
-      Type: AWS::Serverless::Function
-      Properties:
-        FunctionName: gid-allemployees
-        Handler: login_function.lambda_handler
-        Runtime: python3.7
-        MemorySize: 256
-        Timeout: 400
         Role: !GetAtt LambdaRole.Arn
         Environment:
             Variables:
@@ -274,3 +239,228 @@ Resources:
         FunctionName: !Ref "LambdaFunction"
         Principal: "apigateway.amazonaws.com"
         SourceArn: !Sub "arn:aws:execute-api:${AWS::Region}:${AWS::AccountId}:${RestApiAD}/*/POST/"
+
+# Lambda Function All Employees
+
+RestApiEmployees:
+  Type: AWS::ApiGateway::RestApi
+  Properties:
+    Name: api-gid
+Method:
+  Type: AWS::ApiGateway::Method
+  DependsOn: DynamoUsuario
+  Properties:
+    HttpMethod: POST
+    ResourceId: !GetAtt RestApiEmployees.RootResourceId
+    RestApiId: !Ref RestApiEmployees
+    AuthorizationType: NONE
+    MethodResponses:
+        - StatusCode: 200
+          ResponseModels: { "application/json": "Empty" }
+    Integration:
+      Type: AWS
+      IntegrationHttpMethod: "POST"
+      Uri: !Sub "arn:aws:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${LambdaFunctionAllEmployees.Arn}/invocations"
+      IntegrationResponses:
+        - StatusCode: 200
+          ResponseTemplates: {"application/json": ""}
+    OperationName: !Sub ${AWS::AccountId}  
+    
+ApiGatewayResourceAllEmployees:
+  Type: AWS::ApiGateway::Resource
+  DependsOn: DynamoUsuario
+  Properties:
+    ParentId: !GetAtt RestApiEmployees.RootResourceId
+    PathPart: 'lambda'
+    RestApiId: !Ref RestApiEmployees
+
+ApiGatewayModelAllEmployees:
+  Type: AWS::ApiGateway::Model
+  DependsOn: DynamoUsuario
+  Properties:
+    ContentType: 'application/json'
+    RestApiId: !Ref RestApiEmployees
+    Schema: {}
+
+ApiGatewayStageAllEmployees:
+  Type: AWS::ApiGateway::Stage
+  DependsOn: DynamoUsuario
+  Properties:
+    DeploymentId: !Ref ApiGatewayDeploymentAllEmployees
+    Description: Lambda API Stage v0
+    RestApiId: !Ref RestApiEmployees
+    StageName: 'v0'
+
+ApiGatewayDeploymentAllEmployees:
+  Type: AWS::ApiGateway::Deployment
+  DependsOn: Method
+  Properties:
+    Description: Lambda API Deployment
+    RestApiId: !Ref RestApiEmployees
+
+ApiGatewayIamRoleEmployees:
+      Type: AWS::IAM::Role
+      DependsOn: DynamoUsuario
+      Properties:
+        AssumeRolePolicyDocument:
+          Version: '2012-10-17'
+          Statement:
+            - Sid: ''
+              Effect: 'Allow'
+              Principal:
+                Service:
+                  - 'apigateway.amazonaws.com'
+              Action:
+                - 'sts:AssumeRole'
+        Path: '/'
+        Policies:
+          - PolicyName: LambdaAccess
+            PolicyDocument:
+              Version: '2012-10-17'
+              Statement:
+                - Effect: 'Allow'
+                  Action: 'lambda:*'
+                  Resource: !GetAtt LambdaFunctionAllEmployees.Arn
+
+LambdaFunctionAllEmployees:
+  Type: AWS::Serverless::Function
+  Properties:
+    FunctionName: GidNet
+    Handler: allemployees_function.lambda_handler
+    Runtime: python3.7
+    MemorySize: 256
+    Timeout: 300
+    Role: !GetAtt LambdaRole.Arn
+    Environment:
+        Variables:
+            DYNAMO_BD: !Ref DynamoUsuario
+
+LambdaPolicyEC2AllEmployees:
+  Type: AWS::IAM::ManagedPolicy
+  DependsOn: DynamoUsuario
+  Properties:
+      PolicyDocument:
+          Version: 2012-10-17
+          Statement:
+              -
+                Effect: Allow
+                Action:
+                    - ec2:DisassociateAddress
+                    - ec2:CreateDhcpOptions
+                    - ec2:ReplaceRouteTableAssociation
+                    - ec2:RunScheduledInstances
+                    - ec2:RequestSpotFleet
+                    - ec2:DisableVgwRoutePropagation
+                    - ec2:AssociateVpcCidrBlock
+                    - ec2:ReleaseHosts
+                    - ec2:ReplaceRoute
+                    - ec2:DisassociateVpcCidrBlock
+                    - ec2:DeleteNetworkInterfacePermission
+                    - ec2:DescribeNetworkInterfaces
+                    - ec2:StartInstances
+                    - ec2:DescribeNetworkInterfaceAttribute
+                    - ec2:CreateRoute
+                    - ec2:ReplaceNetworkAclEntry
+                    - ec2:CreateSecurityGroup
+                    - ec2:CreateNetworkAcl
+                    - ec2:DescribeNetworkInterfacePermissions
+                    - ec2:TerminateInstances
+                    - ec2:AcceptVpcEndpointConnections
+                    - ec2:DeleteNetworkInterface
+                    - ec2:CreateRouteTable
+                    - ec2:RunInstances
+                    - ec2:StopInstances
+                    - ec2:DisassociateRouteTable
+                    - ec2:DisassociateSubnetCidrBlock
+                    - ec2:ModifyHosts
+                    - ec2:ReplaceNetworkAclAssociation
+                    - ec2:CreateVolume
+                    - ec2:CreateNetworkInterface
+                    - ec2:DetachVpnGateway
+                    - ec2:CreateDefaultVpc
+                    - ec2:DisassociateIamInstanceProfile
+                    - ec2:CreateVpcEndpoint
+                    - ec2:DisableVpcClassicLink
+                    - ec2:CreateSubnet
+                Resource:
+                    - "*"
+
+LambdaPolicyDynamoAllEmployees:
+  Type: AWS::IAM::ManagedPolicy
+  Properties:
+      PolicyDocument:
+          Version: 2012-10-17
+          Statement:
+              -
+                Effect: Allow
+                Action:
+                    - dynamodb:PutItem
+                    - dynamodb:UpdateItem
+                    - dynamodb:GetItem
+                    - dynamodb:*
+                Resource:
+                    - "*"
+
+LambdaPolicyCWAllEmployees:
+  Type: AWS::IAM::ManagedPolicy
+  Properties:
+      PolicyDocument:
+          Version: 2012-10-17
+          Statement:
+              -
+                Effect: Allow
+                Action:
+                    - logs:*
+                    - cloudwatch:*
+                    - xray:*
+                Resource:
+                    - "*"
+
+LambdaRoleAllEmployees:
+  Type: AWS::IAM::Role
+  Properties:
+    ManagedPolicyArns:
+      - !Ref LambdaPolicyDynamoAllEmployees
+      - !Ref LambdaPolicyEC2AllEmployees
+      - !Ref LambdaPolicyCWAllEmployees
+    AssumeRolePolicyDocument:
+      Version: 2012-10-17
+      Statement:
+        -
+          Effect: Allow
+          Principal:
+            Service:
+              - lambda.amazonaws.com
+          Action:
+            - sts:AssumeRole
+    Path: /
+
+LambdaPolicyS3AllEmployees:
+  Type: AWS::IAM::ManagedPolicy
+  Properties:
+      PolicyDocument:
+          Version: 2012-10-17
+          Statement:
+              -
+                Effect: Allow
+                Action:
+                    - s3:ListAllMyBuckets
+                    - s3:HeadBucket
+                    - s3:ListObjects
+                Resource:
+                    - "*"
+              -
+                Effect: Allow
+                Action:
+                    - s3:*
+                Resource:
+                    - "*"        
+
+lambdaApiGatewayInvokeAllEmployees:
+  Type: "AWS::Lambda::Permission"
+  DependsOn: LambdaFunction
+  Properties:
+    Action: "lambda:InvokeFunction"
+    FunctionName: !Ref "LambdaFunction"
+    Principal: "apigateway.amazonaws.com"
+    SourceArn: !Sub "arn:aws:execute-api:${AWS::Region}:${AWS::AccountId}:${RestApiEmployees}/*/POST/"
