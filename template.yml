@@ -108,6 +108,18 @@ Resources:
             Variables:
                 DYNAMO_BD: !Ref DynamoUsuario
 
+      LambdaFunction:
+        Type: AWS::Serverless::Function
+        Properties:
+          FunctionName: allEmployees
+          Handler: lambda_function.lambda_handler
+          Runtime: python3.7
+          MemorySize: 256
+          Timeout: 400
+          Role: !GetAtt LambdaRole.Arn
+          Environment:
+              Variables:
+                  DYNAMO_BD: !Ref DynamoUsuario
 
     LambdaPolicyEC2:
       Type: AWS::IAM::ManagedPolicy
