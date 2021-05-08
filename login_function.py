@@ -16,3 +16,7 @@ def get_item():
     )
 
     return response["Items"][0] if any(response["Items"]) else None
+
+def lambda_handler(event, context):
+    log.debug("Received event {}".format(json.dumps(event)))
+    return {}
