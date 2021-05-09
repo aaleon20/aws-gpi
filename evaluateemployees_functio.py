@@ -12,9 +12,9 @@ class DynamoAccessor:
     def get_data_from_dynamo(self, dni):
         response = self.table.update_item(
             Key={'dni': dni},
-            UpdateExpression="set password=:password",
+            UpdateExpression="set evaluate=:evaluate",
             ExpressionAttributeValues={
-                ':password': 1,
+                ':evaluate': 1,
             },
             ReturnValues="UPDATED_NEW"
         )
