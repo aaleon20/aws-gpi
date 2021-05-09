@@ -266,7 +266,7 @@ Resources:
               ResponseTemplates: {"application/json": ""}
         OperationName: !Sub ${AWS::AccountId}        
 
-    ApiGatewayResource:
+    ApiGatewayResourceAllEmployees:
       Type: AWS::ApiGateway::Resource
       DependsOn: DynamoUsuario
       Properties:
