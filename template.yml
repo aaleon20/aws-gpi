@@ -266,6 +266,38 @@ Resources:
               ResponseTemplates: {"application/json": ""}
         OperationName: !Sub ${AWS::AccountId}        
 
+    ApiGatewayResource:
+      Type: AWS::ApiGateway::Resource
+      DependsOn: DynamoUsuario
+      Properties:
+        ParentId: !GetAtt RestApiAllEmployees.RootResourceId
+        PathPart: 'lambda'
+        RestApiId: !Ref RestApiAllEmployees
+
+    ApiGatewayModel:
+      Type: AWS::ApiGateway::Model
+      DependsOn: DynamoUsuario
+      Properties:
+        ContentType: 'application/json'
+        RestApiId: !Ref RestApiAllEmployees
+        Schema: {}
+
+   ApiGatewayStage:
+      Type: AWS::ApiGateway::Stage
+      DependsOn: DynamoUsuario
+      Properties:
+        DeploymentId: !Ref ApiGatewayDeploymentAllEmployees
+        Description: Lambda API Stage v0
+        RestApiId: !Ref RestApiAllEmployees
+        StageName: 'v0'
+
+    ApiGatewayDeploymentAllEmployees:
+      Type: AWS::ApiGateway::Deployment
+      DependsOn: Method
+      Properties:
+        Description: Lambda API Deployment
+        RestApiId: !Ref RestApiAllEmployees
+
     LambdaFunctionAllEmployees:
       Type: AWS::Serverless::Function
       Properties:
