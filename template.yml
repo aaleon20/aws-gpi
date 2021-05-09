@@ -266,7 +266,7 @@ Resources:
               ResponseTemplates: {"application/json": ""}
         OperationName: !Sub ${AWS::AccountId}        
 
-    ApiGatewayResource:
+    ApiGatewayResourceAllEmployees:
       Type: AWS::ApiGateway::Resource
       DependsOn: DynamoUsuario
       Properties:
@@ -274,7 +274,7 @@ Resources:
         PathPart: 'lambda'
         RestApiId: !Ref RestApiAllEmployees
 
-    ApiGatewayModel:
+    ApiGatewayModelAllEmployees:
       Type: AWS::ApiGateway::Model
       DependsOn: DynamoUsuario
       Properties:
