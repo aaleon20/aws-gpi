@@ -15,5 +15,5 @@ class DynamoAccessor:
 
 def lambda_handler(event, context):
     dynamo_backend = DynamoAccessor(DYNAMO_BD)
-    db_element = dynamo_backend.get_data_from_dynamo(event['dni'], event['password'])
+    db_element = dynamo_backend.get_data_from_dynamo()
     return db_element
