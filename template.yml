@@ -258,7 +258,7 @@ Resources:
     LambdaFunctionEvaluateEmployees:
       Type: AWS::Serverless::Function
       Properties:
-        FunctionName: gid-all-employees
+        FunctionName: gid-evaluate-employees
         Handler: allemployees_function.lambda_handler
         Runtime: python3.7
         MemorySize: 256
