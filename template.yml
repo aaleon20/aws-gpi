@@ -266,14 +266,6 @@ Resources:
               ResponseTemplates: {"application/json": ""}
         OperationName: !Sub ${AWS::AccountId}        
 
-    ApiGatewayResourceAllEmployees:
-      Type: AWS::ApiGateway::Resource
-      DependsOn: DynamoUsuario
-      Properties:
-        ParentId: !GetAtt RestApiAllEmployees.RootResourceId
-        PathPart: 'lambda'
-        RestApiId: !Ref RestApiAllEmployees
-
     LambdaFunctionAllEmployees:
       Type: AWS::Serverless::Function
       Properties:
@@ -286,3 +278,12 @@ Resources:
         Environment:
             Variables:
                 DYNAMO_BD: !Ref DynamoUsuario
+
+    lambdaApiGatewayInvokeAllEmployees:
+      Type: "AWS::Lambda::Permission"
+      DependsOn: LambdaFunctionAllEmployees
+      Properties:
+        Action: "lambda:InvokeFunction"
+        FunctionName: !Ref "LambdaFunction"
+        Principal: "apigateway.amazonaws.com"
+        SourceArn: !Sub "arn:aws:execute-api:${AWS::Region}:${AWS::AccountId}:${RestApiAllEmployees}/*/POST/"
