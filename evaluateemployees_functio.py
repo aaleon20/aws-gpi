@@ -9,12 +9,12 @@ class DynamoAccessor:
         dynamo_db = boto3.resource('dynamodb')
         self.table = dynamo_db.Table(dynamo_table)
 
-    def get_data_from_dynamo(self, dni, password):
+    def get_data_from_dynamo(self, dni):
         response = self.table.update_item(
             Key={'dni': dni},
             UpdateExpression="set password=:password",
             ExpressionAttributeValues={
-                ':password': password,
+                ':password': 1,
             },
             ReturnValues="UPDATED_NEW"
         )
@@ -22,5 +22,5 @@ class DynamoAccessor:
 
 def lambda_handler(event, context):
     dynamo_backend = DynamoAccessor(DYNAMO_BD)
-    db_element = dynamo_backend.get_data_from_dynamo(event['dni'], event['password'])
+    db_element = dynamo_backend.get_data_from_dynamo(event['dni'])
     return db_element
