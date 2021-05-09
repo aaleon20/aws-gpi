@@ -100,7 +100,7 @@ Resources:
     LambdaFunction:
       Type: AWS::Serverless::Function
       Properties:
-        FunctionName: GidNet
+        FunctionName: gid-auth-login
         Handler: lambda_function.lambda_handler
         Runtime: python3.7
         MemorySize: 256
@@ -254,6 +254,8 @@ Resources:
         Environment:
             Variables:
                 DYNAMO_BD: !Ref DynamoUsuario
+
+    #Lambda Function Evaluate Employees 
 
     LambdaFunctionEvaluateEmployees:
       Type: AWS::Serverless::Function
