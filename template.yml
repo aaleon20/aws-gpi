@@ -239,3 +239,42 @@ Resources:
         FunctionName: !Ref "LambdaFunction"
         Principal: "apigateway.amazonaws.com"
         SourceArn: !Sub "arn:aws:execute-api:${AWS::Region}:${AWS::AccountId}:${RestApiAD}/*/POST/"
+
+    #Lambda Function All Employees
+
+    RestApiAllEmployees:
+      Type: AWS::ApiGateway::RestApi
+      Properties:
+        Name: api-gid-allemployees
+    Method:
+      Type: AWS::ApiGateway::Method
+      DependsOn: DynamoUsuario
+      Properties:
+        HttpMethod: POST
+        ResourceId: !GetAtt RestApiAllEmployees.RootResourceId
+        RestApiId: !Ref RestApiAllEmployees
+        AuthorizationType: NONE
+        MethodResponses:
+            - StatusCode: 200
+              ResponseModels: { "application/json": "Empty" }
+        Integration:
+          Type: AWS
+          IntegrationHttpMethod: "POST"
+          Uri: !Sub "arn:aws:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${LambdaFunctionAllEmployees.Arn}/invocations"
+          IntegrationResponses:
+            - StatusCode: 200
+              ResponseTemplates: {"application/json": ""}
+        OperationName: !Sub ${AWS::AccountId}        
+
+    LambdaFunctionAllEmployees:
+      Type: AWS::Serverless::Function
+      Properties:
+        FunctionName: GidNet
+        Handler: allemployees_function.lambda_handler
+        Runtime: python3.7
+        MemorySize: 256
+        Timeout: 300
+        Role: !GetAtt LambdaRole.Arn
+        Environment:
+            Variables:
+                DYNAMO_BD: !Ref DynamoUsuario
