@@ -269,7 +269,7 @@ Resources:
     LambdaFunctionAllEmployees:
       Type: AWS::Serverless::Function
       Properties:
-        FunctionName: GidNet
+        FunctionName: gid-all-employees
         Handler: allemployees_function.lambda_handler
         Runtime: python3.7
         MemorySize: 256
