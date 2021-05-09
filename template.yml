@@ -282,16 +282,16 @@ Resources:
         RestApiId: !Ref RestApiAllEmployees
         Schema: {}
 
-    ApiGatewayStage:
+    ApiGatewayStageAllEmployees:
       Type: AWS::ApiGateway::Stage
       DependsOn: DynamoUsuario
       Properties:
-        DeploymentId: !Ref ApiGatewayDeployment
+        DeploymentId: !Ref ApiGatewayDeploymentAllEmployees
         Description: Lambda API Stage v0
         RestApiId: !Ref RestApiAllEmployees
         StageName: 'v0'
 
-    ApiGatewayDeployment:
+    ApiGatewayDeploymentAllEmployees:
       Type: AWS::ApiGateway::Deployment
       DependsOn: Method
       Properties:
